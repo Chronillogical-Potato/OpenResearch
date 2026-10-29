@@ -1,3 +1,4 @@
+import { EscapeScope } from "./EscapeScope";
 import { cn } from "./ui/cn";
 import { Dialog } from "@base-ui/react/dialog";
 import { formatAcpCommand } from "../acp";
@@ -2045,18 +2046,11 @@ function QuickSetupDialog({ target, remote, onClose }: { target: ComputeTargetSu
     onClose();
   };
 
-  return (
+  return <EscapeScope onEscape={close}>
     <dialog
       ref={dialogRef}
       className="m-auto w-140 max-w-[calc(100vw_-_40px)] max-h-[calc(100vh_-_40px)] overflow-y-auto rounded-xl border border-border bg-background p-5 text-text shadow-modal backdrop:bg-modal-backdrop-light"
       aria-labelledby="compute-quick-setup-title"
-      // Escape on keydown (not just cancel) so a declined discard confirm can't be
-      // force-closed by the close watcher; an open OptionPicker swallows it first.
-      onKeyDown={(event) => {
-        if (event.key !== "Escape") return;
-        event.preventDefault();
-        close();
-      }}
       onCancel={(event) => {
         event.preventDefault();
         close();
@@ -2081,7 +2075,7 @@ function QuickSetupDialog({ target, remote, onClose }: { target: ComputeTargetSu
       {target.id === "ray" && <RaySection />}
       {target.id === "k8s" && <K8sSection onEditState={setEditState} />}
     </dialog>
-  );
+  </EscapeScope>;
 }
 
 function ComputeTab({
@@ -2152,7 +2146,7 @@ function ComputeTab({
 
   return (
     <>
-      <h1>{m.settings_page_compute()}</h1>
+      <h1 tabIndex={-1}>{m.settings_page_compute()}</h1>
       <p className="settings-sub mt-0 mx-0 mb-4.5 text-base leading-relaxed text-text">
         {m.settings_page_connect_compute_backends_and_choose_where_new_runs()}
       </p>
@@ -2921,7 +2915,7 @@ function UpdatesTab() {
     else applyChannel(channel);
   };
 
-  return (
+  return <>{(
     <>
       <h2>{m.settings_page_updates()}</h2>
       <div className={`${SETTINGS_CARD_CLASS_NAME} mt-3`}>
@@ -3079,7 +3073,7 @@ function UpdatesTab() {
         </Dialog.Portal>
       </Dialog.Root>
     </>
-  );
+  )}<EscapeScope enabled={confirmCanary} onEscape={() => setConfirmCanary(false)} /></>;
 }
 
 function TelemetryTab() {
@@ -4050,7 +4044,7 @@ export function SettingsView({
     <div className="settings-view max-w-readable my-0 mx-auto pt-6 px-8 pb-15 [&_h1]:mt-0 [&_h1]:mx-0 [&_h1]:mb-1.5 [&_h1]:text-3xl [&_>_.error]:text-accent-red [&_>_.error]:text-base [&_>_.error]:whitespace-pre-wrap [&_>_.error]:mt-0 [&_>_.error]:mx-0 [&_>_.error]:mb-3">
       {showsSettings && (
         <>
-          <h1>{m.settings_page_settings()}</h1>
+          <h1 tabIndex={-1}>{m.settings_page_settings()}</h1>
           <div className="settings-stack mt-4.5">
             <section className={SETTINGS_STACK_SECTION_CLASS_NAME}>
               <AppearanceTab />
